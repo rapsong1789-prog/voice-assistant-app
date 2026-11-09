@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice Assistant - by rapsong1789-prog</title>
+<style>
+body{background:#111;color:white;text-align:center;font-family:sans-serif;padding:20px}
+h1{color:#00ff88}
+button{width:90%;padding:18px;margin:10px;font-size:20px;border:none;border-radius:15px;background:#00ff88;color:black;font-weight:bold}
+button:active{background:white}
+#result{background:#222;padding:15px;border-radius:10px;margin-top:10px;min-height:50px}
+</style>
+</head>
+<body>
+<h1>🎤 Voice Assistant</h1>
+<p>Bolo aur Sab Kuch Karwao</p>
+
+<button onclick="speak('Ammi ko call laga raha hoon')">📞 Call Lagao</button>
+<button onclick="speak('Treehouse Fishing Game khol raha hoon')">🎮 Game Khelo</button>
+<button onclick="speak('Sari notification parh raha hoon')">🔔 Notification Parho</button>
+<button onclick="speak('Camera khol kar dekh raha hoon')">📷 Camera Kholo</button>
+<button onclick="speak('Email aur WhatsApp parh raha hoon')">📩 Email Parho</button>
+<button onclick="speak('Google par search kar raha hoon')">🔍 Search Karo</button>
+
+<div id="result">Yahan jawab aayega...</div>
+
+<script>
+function speak(text){
+  document.getElementById('result').innerText = text;
+  let a = new SpeechSynthesisUtterance(text);
+  a.lang = 'ur-PK';
+  speechSynthesis.speak(a);
+}
+</script>
+</body>
+</html>
