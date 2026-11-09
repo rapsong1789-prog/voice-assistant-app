@@ -4,15 +4,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>JARVIS - Voice Assistant</title>
 <style>
+*{ -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent; }
 body{background:#000;color:white;text-align:center;font-family:sans-serif;padding:10px;margin:0}
 h1{color:#00e5ff;font-size:24px;margin-top:25px;letter-spacing:3px}
 p{color:#aaa}
 .robot-box{position:relative;width:280px;height:280px;margin:30px auto}
-.ring{position:absolute;border:2px solid #00e5ff;border-radius:50%;inset:0;animation:spin 6s linear infinite;box-shadow:0 0 30px #00e5ff}
-.ring2{position:absolute;border:2px dashed #00e5ff;border-radius:50%;inset:20px;animation:spin2 4s linear infinite}
+.ring{position:absolute;border:2px solid #00e5ff;border-radius:50%;inset:0;animation:spin 6s linear infinite;box-shadow:0 0 30px #00e5ff;pointer-events:none}
+.ring2{position:absolute;border:2px dashed #00e5ff;border-radius:50%;inset:20px;animation:spin2 4s linear infinite;pointer-events:none}
 @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 @keyframes spin2{0%{transform:rotate(360deg)}100%{transform:rotate(0deg)}}
-#micBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:170px;height:170px;border-radius:50%;border:none;background:radial-gradient(circle,#00e5ff,#003a44);color:white;font-size:60px;box-shadow:0 0 50px #00e5ff}
+#micBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:170px;height:170px;border-radius:50%;border:none;background:radial-gradient(circle,#00e5ff,#003a44);color:white;font-size:60px;box-shadow:0 0 50px #00e5ff;z-index:10}
+#micBtn:active{transform:translate(-50%,-50%) scale(0.92)}
 #result{background:#0a1a1e;border:1px solid #00e5ff;padding:15px;border-radius:15px;margin:10px;min-height:60px;font-size:18px;color:#00e5ff}
 #video{width:90%;border-radius:15px;display:none;margin-top:10px}
 </style>
@@ -20,7 +22,7 @@ p{color:#aaa}
 <body>
 <h1>J.A.R.V.I.S</h1>
 <p>تمہارا اپنا روبوٹ اسسٹنٹ</p>
-<div class="robot-box"><div class="ring"></div><div class="ring2"></div><button id="micBtn" onclick="sunno()">🎤</button></div>
+<div class="robot-box"><div class="ring"></div><div class="ring2"></div><button id="micBtn">🎤</button></div>
 <p>بٹن دباؤ اور بولو جان</p>
 <div id="result">میں تیار ہوں... بولو کیا کرنا ہے؟</div>
 <video id="video" autoplay playsinline></video>
@@ -34,9 +36,40 @@ function speak(text){
 }
 function sunno(){
   let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ speak('کروم میں کھولو جان'); return; }
+  if(!SR){ speak('Chrome me kholo jan, yahan mic nahi chalega'); return; }
   let r = new SR(); r.lang = 'ur-PK';
-  r.onstart = function(){ document.getElementById('result').innerText = 'سن رہا ہوں جان... بولو...'; };
+  r.onstart = function(){ document.getElementById('result').innerText = 'Sun raha hun jan... bolo...'; };
+  r.onerror = function(){ speak('Mic ki ijazat nahi mili jan, upar se Allow dabao'); };
   r.onresult = function(e){
     let bola = e.results[0][0].transcript;
-    document.getElementById('result').innerText = 'تم نے کہا: '
+    document.getElementById('result').innerText = 'Tum ne kaha: ' + bola;
+    let lower = bola.toLowerCase();
+    let nums = bola.replace(/[^0-9]/g,'');
+    if(nums.length >= 10){ lastNumber = nums; }
+    if(lower.includes('call') || bola.includes('کال') || bola.includes('فون') || bola.includes('ملاؤ')){
+      if(nums.length >= 10){ speak('Theek hai jan, call laga raha hun'); setTimeout(function(){ window.location.href = 'tel:' + nums; }, 1800); }
+      else if(lastNumber){ speak('Theek hai jan, call laga raha hun'); setTimeout(function(){ window.location.href = 'tel:' + lastNumber; }, 1500); }
+      else { speak('Kis number par call lagaun jan? Number bolo'); }
+    }
+    else if(lower.includes('camera') || bola.includes('کیمرہ') || bola.includes('کیمرا')){
+      speak('Camera khol raha hun jan');
+      navigator.mediaDevices.getUserMedia({video:true}).then(function(s){ let v=document.getElementById('video'); v.style.display='block'; v.srcObject=s; });
+    }
+    else if(lower.includes('whatsapp') || bola.includes('واٹس')){
+      if(nums.length >= 10){ speak('WhatsApp khol raha hun jan'); setTimeout(function(){ window.location.href='https://wa.me/92'+nums.slice(-10); },1500); }
+      else { speak('WhatsApp number bolo jan'); }
+    }
+    else if(lower.includes('game') || bola.includes('گیم')){ speak('Game khol raha hun jan'); setTimeout(function(){ window.location.href='https://poki.com'; },1500); }
+    else if(lower.includes('youtube') || bola.includes('یوٹیوب') || bola.includes('گانا') || bola.includes('سونگ')){ speak('YouTube khol raha hun jan'); setTimeout(function(){ window.location.href='https://www.youtube.com/results?search_query='+encodeURIComponent(bola); },1500); }
+    else if(lower.includes('search') || bola.includes('سرچ') || bola.includes('گوگل') || bola.includes('ڈھونڈو')){ speak('Google par search kar raha hun jan'); setTimeout(function(){ window.location.href='https://www.google.com/search?q='+encodeURIComponent(bola); },1500); }
+    else if(bola.includes('ٹائم') || lower.includes('time')){ let d=new Date(); speak('Jan abhi time ho raha hai ' + d.getHours() + ' baj kar ' + d.getMinutes() + ' minute'); }
+    else if(bola.includes('نوٹیفکیشن') || bola.includes('میسج')){ speak('Jan abhi koi naya message nahi aaya'); }
+    else { speak('Tum ne kaha ' + bola); }
+  };
+  r.start();
+}
+document.getElementById('micBtn').addEventListener('click', sunno);
+document.getElementById('micBtn').addEventListener('touchstart', function(e){ e.preventDefault(); sunno(); });
+</script>
+</body>
+</html>
