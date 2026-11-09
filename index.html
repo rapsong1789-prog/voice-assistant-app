@@ -2,35 +2,41 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Voice Assistant - by rapsong1789-prog</title>
+<title>JARVIS - Voice Assistant</title>
 <style>
-body{background:#111;color:white;text-align:center;font-family:sans-serif;padding:20px}
-h1{color:#00ff88}
-button{width:90%;padding:18px;margin:10px;font-size:20px;border:none;border-radius:15px;background:#00ff88;color:black;font-weight:bold}
-button:active{background:white}
-#result{background:#222;padding:15px;border-radius:10px;margin-top:10px;min-height:50px}
+body{background:#000;color:white;text-align:center;font-family:sans-serif;padding:10px;margin:0}
+h1{color:#00e5ff;font-size:24px;margin-top:25px;letter-spacing:3px}
+p{color:#aaa}
+.robot-box{position:relative;width:280px;height:280px;margin:30px auto}
+.ring{position:absolute;border:2px solid #00e5ff;border-radius:50%;inset:0;animation:spin 6s linear infinite;box-shadow:0 0 30px #00e5ff}
+.ring2{position:absolute;border:2px dashed #00e5ff;border-radius:50%;inset:20px;animation:spin2 4s linear infinite}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes spin2{0%{transform:rotate(360deg)}100%{transform:rotate(0deg)}}
+#micBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:170px;height:170px;border-radius:50%;border:none;background:radial-gradient(circle,#00e5ff,#003a44);color:white;font-size:60px;box-shadow:0 0 50px #00e5ff}
+#result{background:#0a1a1e;border:1px solid #00e5ff;padding:15px;border-radius:15px;margin:10px;min-height:60px;font-size:18px;color:#00e5ff}
+#video{width:90%;border-radius:15px;display:none;margin-top:10px}
 </style>
 </head>
 <body>
-<h1>🎤 Voice Assistant</h1>
-<p>Bolo aur Sab Kuch Karwao</p>
-
-<button onclick="speak('Ammi ko call laga raha hoon')">📞 Call Lagao</button>
-<button onclick="speak('Treehouse Fishing Game khol raha hoon')">🎮 Game Khelo</button>
-<button onclick="speak('Sari notification parh raha hoon')">🔔 Notification Parho</button>
-<button onclick="speak('Camera khol kar dekh raha hoon')">📷 Camera Kholo</button>
-<button onclick="speak('Email aur WhatsApp parh raha hoon')">📩 Email Parho</button>
-<button onclick="speak('Google par search kar raha hoon')">🔍 Search Karo</button>
-
-<div id="result">Yahan jawab aayega...</div>
-
+<h1>J.A.R.V.I.S</h1>
+<p>تمہارا اپنا روبوٹ اسسٹنٹ</p>
+<div class="robot-box"><div class="ring"></div><div class="ring2"></div><button id="micBtn" onclick="sunno()">🎤</button></div>
+<p>بٹن دباؤ اور بولو جان</p>
+<div id="result">میں تیار ہوں... بولو کیا کرنا ہے؟</div>
+<video id="video" autoplay playsinline></video>
 <script>
+let lastNumber = "";
 function speak(text){
   document.getElementById('result').innerText = text;
   let a = new SpeechSynthesisUtterance(text);
   a.lang = 'ur-PK';
   speechSynthesis.speak(a);
 }
-</script>
-</body>
-</html>
+function sunno(){
+  let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ speak('کروم میں کھولو جان'); return; }
+  let r = new SR(); r.lang = 'ur-PK';
+  r.onstart = function(){ document.getElementById('result').innerText = 'سن رہا ہوں جان... بولو...'; };
+  r.onresult = function(e){
+    let bola = e.results[0][0].transcript;
+    document.getElementById('result').innerText = 'تم نے کہا: '
